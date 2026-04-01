@@ -1,0 +1,50 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm *)",
+      "Bash(npx vitest *)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npx eslint *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(node packages/cli/dist/index.js *)",
+      "Edit(packages/**)",
+      "Edit(rules/**)",
+      "Edit(tests/**)",
+      "Edit(docs/**)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force *)",
+      "Bash(git reset --hard *)",
+      "Write(src/**)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [{
+          "type": "command",
+          "command": "if echo \"$CLAUDE_FILE_PATH\" | grep -q 'rules/'; then pnpm test:rule 2>&1 | tail -20; fi"
+        }]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [{
+          "type": "command",
+          "command": "if echo \"$CLAUDE_FILE_PATH\" | grep -q '\\.ts$'; then npx tsc --noEmit 2>&1 | head -15; fi"
+        }]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [{
+          "type": "command",
+          "command": "echo '=== 현재 빌드 상태 ===' && npx tsc --noEmit 2>&1 | head -10 && echo '=== 테스트 현황 ===' && pnpm test --reporter=verbose 2>&1 | tail -15"
+        }]
+      }
+    ]
+  }
+}
