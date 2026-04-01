@@ -1,0 +1,26 @@
+{
+  "name": "a11y-fixer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "KWCAG 2.2 기반 웹 접근성 오류 자동 수정 CLI 도구",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "test": "vitest",
+    "test:rule": "vitest --dir tests/fixtures",
+    "lint": "eslint packages rules --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "eslint": "^8.56.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  },
+  "packageManager": "pnpm@8.14.0"
+}

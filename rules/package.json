@@ -1,0 +1,11 @@
+{
+  "name": "@a11y-fixer/rules",
+  "version": "0.1.0",
+  "private": true,
+  "description": "KWCAG 2.2 규칙 정의",
+  "type": "module",
+  "main": "./index.ts",
+  "dependencies": {
+    "@a11y-fixer/core": "workspace:*"
+  }
+}

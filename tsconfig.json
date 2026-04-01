@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "paths": {
+      "@a11y-fixer/core": ["./packages/core/src"],
+      "@a11y-fixer/cli": ["./packages/cli/src"],
+      "@a11y-fixer/reporter": ["./packages/reporter/src"]
+    }
+  },
+  "include": ["packages/*/src/**/*", "rules/**/*", "tests/**/*"],
+  "exclude": ["node_modules", "**/dist/**"]
+}
