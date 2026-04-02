@@ -281,10 +281,10 @@ a11y-fixer/ (pnpm workspace monorepo)
 
 ### Phase 3 — CLI 연결 (2일)
 
-- [ ] `fix` 커맨드 완성 (dry-run + 실제 적용)
-- [ ] `scan` 커맨드 (읽기 전용)
-- [ ] `fixed/` 폴더 출력
-- [ ] `manual-queue.json` 생성
+- [x] `fix` 커맨드 완성 (dry-run + 실제 적용)
+- [x] `scan` 커맨드 (읽기 전용)
+- [x] `fixed/` 폴더 출력
+- [x] `manual-queue.json` 생성
 
 ### Phase 4 — JSX/TSX 지원 (5일)
 
