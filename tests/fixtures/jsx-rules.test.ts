@@ -2,7 +2,14 @@ import { describe, it, expect } from 'vitest';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { parseJsx, serializeJsx } from '@a11y-fixer/core';
-import { imgAltRule, inputLabelRule, buttonNameRule } from '@a11y-fixer/rules';
+import {
+  imgAltRule,
+  inputLabelRule,
+  buttonNameRule,
+  tabindexPositiveRule,
+  linkBlankRelRule,
+  divOnclickRoleRule,
+} from '@a11y-fixer/rules';
 
 const FIXTURES_DIR = resolve(__dirname, '.');
 

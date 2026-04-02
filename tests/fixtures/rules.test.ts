@@ -8,6 +8,10 @@ import {
   inputLabelRule,
   buttonNameRule,
   duplicateIdRule,
+  tabindexPositiveRule,
+  linkBlankRelRule,
+  divOnclickRoleRule,
+  tableScopeRule,
 } from '@a11y-fixer/rules';
 import type { ViolationInfo } from '@a11y-fixer/core';
 
@@ -190,6 +194,194 @@ describe('duplicate-id rule', () => {
     // 역순으로 처리해야 인덱스가 꼬이지 않음
     for (const violation of [...violations].reverse()) {
       duplicateIdRule.fix.html!($, violation);
+    }
+
+    const result = serializeHtml($);
+
+    expect(normalizeHtml(result)).toBe(normalizeHtml(after));
+  });
+});
+
+describe('tabindex-positive rule', () => {
+  it('should detect elements with positive tabindex', async () => {
+    const before = await loadFixture('tabindex-positive', 'before');
+    const { $ } = parseHtml(before);
+
+    const violations = tabindexPositiveRule.detect.html!($);
+
+    // tabindex="1", tabindex="2", tabindex="3" → 3개 위반
+    expect(violations.length).toBe(3);
+    expect(violations.every((v) => v.ruleId === 'tabindex-positive')).toBe(true);
+    expect(violations.every((v) => v.grade === 'A')).toBe(true);
+    expect(violations.every((v) => v.fixable)).toBe(true);
+  });
+
+  it('should not detect tabindex="0" or tabindex="-1"', async () => {
+    const html = `
+      <input tabindex="0" />
+      <span tabindex="-1">hidden</span>
+    `;
+    const { $ } = parseHtml(html);
+    const violations = tabindexPositiveRule.detect.html!($);
+    expect(violations.length).toBe(0);
+  });
+
+  it('should fix positive tabindex to 0', async () => {
+    const before = await loadFixture('tabindex-positive', 'before');
+    const after = await loadFixture('tabindex-positive', 'after');
+
+    const { $ } = parseHtml(before);
+    const violations = tabindexPositiveRule.detect.html!($);
+
+    for (const violation of violations) {
+      tabindexPositiveRule.fix.html!($, violation);
+    }
+
+    const result = serializeHtml($);
+
+    expect(normalizeHtml(result)).toBe(normalizeHtml(after));
+  });
+});
+
+describe('link-blank-rel rule', () => {
+  it('should detect target="_blank" links without noopener', async () => {
+    const before = await loadFixture('link-blank-rel', 'before');
+    const { $ } = parseHtml(before);
+
+    const violations = linkBlankRelRule.detect.html!($);
+
+    // rel 없음 1개 + rel에 noopener 없음 1개 = 2개
+    expect(violations.length).toBe(2);
+    expect(violations.every((v) => v.ruleId === 'link-blank-rel')).toBe(true);
+    expect(violations.every((v) => v.grade === 'A')).toBe(true);
+    expect(violations.every((v) => v.fixable)).toBe(true);
+  });
+
+  it('should not detect links without target="_blank"', async () => {
+    const html = '<a href="/internal">내부 링크</a>';
+    const { $ } = parseHtml(html);
+    const violations = linkBlankRelRule.detect.html!($);
+    expect(violations.length).toBe(0);
+  });
+
+  it('should not detect links with noopener already set', async () => {
+    const html = '<a href="https://safe.com" target="_blank" rel="noopener noreferrer">링크</a>';
+    const { $ } = parseHtml(html);
+    const violations = linkBlankRelRule.detect.html!($);
+    expect(violations.length).toBe(0);
+  });
+
+  it('should fix by adding noopener noreferrer', async () => {
+    const before = await loadFixture('link-blank-rel', 'before');
+    const after = await loadFixture('link-blank-rel', 'after');
+
+    const { $ } = parseHtml(before);
+    const violations = linkBlankRelRule.detect.html!($);
+
+    for (const violation of violations) {
+      linkBlankRelRule.fix.html!($, violation);
+    }
+
+    const result = serializeHtml($);
+
+    expect(normalizeHtml(result)).toBe(normalizeHtml(after));
+  });
+});
+
+describe('div-onclick-role rule', () => {
+  it('should detect div/span with onclick but no role', async () => {
+    const before = await loadFixture('div-onclick-role', 'before');
+    const { $ } = parseHtml(before);
+
+    const violations = divOnclickRoleRule.detect.html!($);
+
+    // div onclick 1개 + span onclick 1개 + div onclick+tabindex 1개 = 3개
+    expect(violations.length).toBe(3);
+    expect(violations.every((v) => v.ruleId === 'div-onclick-role')).toBe(true);
+    expect(violations.every((v) => v.grade === 'A')).toBe(true);
+    expect(violations.every((v) => v.fixable)).toBe(true);
+  });
+
+  it('should not detect div with role already set', async () => {
+    const html = '<div role="button" onclick="test()" tabindex="0">버튼</div>';
+    const { $ } = parseHtml(html);
+    const violations = divOnclickRoleRule.detect.html!($);
+    expect(violations.length).toBe(0);
+  });
+
+  it('should not detect div without onclick', async () => {
+    const html = '<div>일반 div</div>';
+    const { $ } = parseHtml(html);
+    const violations = divOnclickRoleRule.detect.html!($);
+    expect(violations.length).toBe(0);
+  });
+
+  it('should fix by adding role="button" and tabindex="0"', async () => {
+    const before = await loadFixture('div-onclick-role', 'before');
+    const after = await loadFixture('div-onclick-role', 'after');
+
+    const { $ } = parseHtml(before);
+    const violations = divOnclickRoleRule.detect.html!($);
+
+    for (const violation of violations) {
+      divOnclickRoleRule.fix.html!($, violation);
+    }
+
+    const result = serializeHtml($);
+
+    expect(normalizeHtml(result)).toBe(normalizeHtml(after));
+  });
+});
+
+describe('table-scope rule', () => {
+  it('should detect th elements without scope', async () => {
+    const before = await loadFixture('table-scope', 'before');
+    const { $ } = parseHtml(before);
+
+    const violations = tableScopeRule.detect.html!($);
+
+    // thead th 3개 + tbody th (scope 없는 것) 1개 = 4개
+    expect(violations.length).toBe(4);
+    expect(violations.every((v) => v.ruleId === 'table-scope')).toBe(true);
+    expect(violations.every((v) => v.grade === 'A')).toBe(true);
+    expect(violations.every((v) => v.fixable)).toBe(true);
+  });
+
+  it('should not detect th elements that already have scope', async () => {
+    const html = '<table><thead><tr><th scope="col">이름</th></tr></thead></table>';
+    const { $ } = parseHtml(html);
+    const violations = tableScopeRule.detect.html!($);
+    expect(violations.length).toBe(0);
+  });
+
+  it('should assign scope="col" to thead th and scope="row" to first tbody th', async () => {
+    const before = await loadFixture('table-scope', 'before');
+    const violations_before = (() => {
+      const { $ } = parseHtml(before);
+      return tableScopeRule.detect.html!($);
+    })();
+
+    // thead th는 scope="col", 첫 번째 tbody th는 scope="row"
+    const theadViolations = violations_before.filter(
+      (v) => (v.meta as { scopeValue?: string })?.scopeValue === 'col'
+    );
+    const tbodyViolations = violations_before.filter(
+      (v) => (v.meta as { scopeValue?: string })?.scopeValue === 'row'
+    );
+
+    expect(theadViolations.length).toBe(3);
+    expect(tbodyViolations.length).toBe(1);
+  });
+
+  it('should fix by adding correct scope attributes', async () => {
+    const before = await loadFixture('table-scope', 'before');
+    const after = await loadFixture('table-scope', 'after');
+
+    const { $ } = parseHtml(before);
+    const violations = tableScopeRule.detect.html!($);
+
+    for (const violation of violations) {
+      tableScopeRule.fix.html!($, violation);
     }
 
     const result = serializeHtml($);

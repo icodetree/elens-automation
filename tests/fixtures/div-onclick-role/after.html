@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="UTF-8"><title>div-onclick-role before</title></head>
+<body>
+  <!-- role 없음: 위반 -->
+  <div onclick="handleClick()" role="button" tabindex="0">클릭 가능한 영역</div>
+  <!-- span role 없음: 위반 -->
+  <span onclick="doSomething()" role="button" tabindex="0">실행</span>
+  <!-- role 있음: 정상 -->
+  <div role="button" onclick="handleClick()" tabindex="0">이미 올바름</div>
+  <!-- onclick + tabindex 있으나 role 없음: 위반 -->
+  <div onclick="test()" tabindex="0" role="button">탭인덱스만 있음</div>
+  <!-- onclick 없음: 정상 -->
+  <div>일반 div</div>
+</body>
+</html>

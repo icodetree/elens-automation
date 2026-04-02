@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="UTF-8"><title>link-blank-rel before</title></head>
+<body>
+  <!-- rel 없음: 위반 -->
+  <a href="https://example.com" target="_blank" rel="noopener noreferrer">예제 사이트</a>
+  <!-- rel에 noopener 없음: 위반 -->
+  <a href="https://other.com" target="_blank" rel="nofollow noopener noreferrer">다른 사이트</a>
+  <!-- rel에 noopener 있음: 정상 -->
+  <a href="https://safe.com" target="_blank" rel="noopener noreferrer">안전한 사이트</a>
+  <!-- target="_blank" 없음: 정상 -->
+  <a href="/internal">내부 링크</a>
+  <!-- target="_self": 정상 -->
+  <a href="https://example.com" target="_self">같은 창으로</a>
+</body>
+</html>

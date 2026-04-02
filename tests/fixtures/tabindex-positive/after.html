@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="UTF-8"><title>tabindex-positive before</title></head>
+<body>
+  <!-- tabindex 양수: 위반 -->
+  <button id="btn1" tabindex="0">저장</button>
+  <a href="/home" tabindex="0">홈으로</a>
+  <div id="div1" tabindex="0">클릭 가능 영역</div>
+  <!-- tabindex="0": 정상 -->
+  <input type="text" tabindex="0">
+  <!-- tabindex="-1": 정상 -->
+  <span tabindex="-1">숨겨진 포커스</span>
+  <!-- tabindex 없음: 정상 -->
+  <button>취소</button>
+</body>
+</html>

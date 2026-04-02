@@ -4,6 +4,10 @@ import { imgAltRule } from './img-alt.rule.js';
 import { inputLabelRule } from './input-label.rule.js';
 import { buttonNameRule } from './button-name.rule.js';
 import { duplicateIdRule } from './duplicate-id.rule.js';
+import { tabindexPositiveRule } from './tabindex-positive.rule.js';
+import { linkBlankRelRule } from './link-blank-rel.rule.js';
+import { divOnclickRoleRule } from './div-onclick-role.rule.js';
+import { tableScopeRule } from './table-scope.rule.js';
 
 /**
  * 모든 규칙 목록 (우선순위 순)
@@ -14,6 +18,10 @@ export const rules: RuleDefinition[] = [
   inputLabelRule,
   buttonNameRule,
   duplicateIdRule,
+  tabindexPositiveRule,
+  linkBlankRelRule,
+  divOnclickRoleRule,
+  tableScopeRule,
 ];
 
 /**
@@ -39,4 +47,8 @@ export {
   inputLabelRule,
   buttonNameRule,
   duplicateIdRule,
+  tabindexPositiveRule,
+  linkBlankRelRule,
+  divOnclickRoleRule,
+  tableScopeRule,
 };

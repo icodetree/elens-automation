@@ -295,7 +295,7 @@ a11y-fixer/ (pnpm workspace monorepo)
 ### Phase 5 — 검증 + 추가 규칙 (3일)
 
 - [ ] `verify` 커맨드 (Playwright + axe-core)
-- [ ] 나머지 Grade A 규칙 (`tabindex-positive`, `link-blank-rel`, `div-onclick-role`, `table-scope`)
+- [x] 나머지 Grade A 규칙 (`tabindex-positive`, `link-blank-rel`, `div-onclick-role`, `table-scope`)
 
 ### Phase 6 — 이렌즈 연동 (1일)
 

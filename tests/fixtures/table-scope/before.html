@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="UTF-8"><title>table-scope before</title></head>
+<body>
+  <table>
+    <thead>
+      <tr>
+        <!-- scope 없음: 위반 (thead → scope="col") -->
+        <th>이름</th>
+        <th>나이</th>
+        <th>직업</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <!-- scope 없음, 행 첫 번째 셀: 위반 (scope="row") -->
+        <th>홍길동</th>
+        <td>30</td>
+        <td>개발자</td>
+      </tr>
+      <tr>
+        <!-- scope 있음: 정상 -->
+        <th scope="row">김철수</th>
+        <td>25</td>
+        <td>디자이너</td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>
