@@ -32,6 +32,9 @@ importers:
       '@a11y-fixer/reporter':
         specifier: workspace:*
         version: link:../reporter
+      '@a11y-fixer/rules':
+        specifier: workspace:*
+        version: link:../../rules
       chalk:
         specifier: ^5.3.0
         version: 5.6.2
@@ -69,6 +72,12 @@ importers:
       cheerio:
         specifier: ^1.0.0-rc.12
         version: 1.2.0
+      diff:
+        specifier: ^5.1.0
+        version: 5.2.2
+      domhandler:
+        specifier: ^5.0.3
+        version: 5.0.3
     devDependencies:
       '@types/babel__generator':
         specifier: ^7.6.8
@@ -76,6 +85,9 @@ importers:
       '@types/babel__traverse':
         specifier: ^7.20.5
         version: 7.28.0
+      '@types/diff':
+        specifier: ^5.0.9
+        version: 5.2.3
       tsup:
         specifier: ^8.0.1
         version: 8.5.1(typescript@5.9.3)
@@ -110,6 +122,13 @@ importers:
       '@a11y-fixer/core':
         specifier: workspace:*
         version: link:../packages/core
+    devDependencies:
+      tsup:
+        specifier: ^8.0.1
+        version: 8.5.1(typescript@5.9.3)
+      typescript:
+        specifier: ^5.3.3
+        version: 5.9.3
 
 packages:
 

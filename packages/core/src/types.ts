@@ -1,3 +1,6 @@
+import type { CheerioAPI } from 'cheerio';
+import type { Element } from 'domhandler';
+
 /**
  * Grade 분류
  * A: 자동 수정 가능 (90%+ 신뢰도)
@@ -12,6 +15,56 @@ export type Grade = 'A' | 'B' | 'C';
 export type Env = 'html' | 'jsx' | 'tsx' | 'vue';
 
 /**
+ * 위반 항목 (파일 경로 제외)
+ */
+export interface ViolationInfo {
+  /** 규칙 ID */
+  ruleId: string;
+  /** 위반 등급 */
+  grade: Grade;
+  /** CSS 선택자 또는 위치 식별자 */
+  selector: string;
+  /** 소스 코드 라인 번호 (선택) */
+  line?: number;
+  /** 자동 수정 가능 여부 */
+  fixable: boolean;
+  /** 수동 처리 시 제안 메시지 (Grade B/C) */
+  suggestion?: string;
+  /** 원본 코드 스니펫 (선택) */
+  original?: string;
+  /** 수정에 필요한 메타데이터 */
+  meta?: Record<string, unknown>;
+}
+
+/**
+ * 위반 항목 (파일 경로 포함)
+ */
+export interface Violation extends ViolationInfo {
+  /** 파일 경로 */
+  file: string;
+}
+
+/**
+ * HTML 탐지 함수 타입
+ */
+export type HtmlDetector = ($: CheerioAPI) => ViolationInfo[];
+
+/**
+ * HTML 수정 함수 타입
+ */
+export type HtmlFixer = ($: CheerioAPI, violation: ViolationInfo) => boolean;
+
+/**
+ * JSX/TSX 탐지 함수 타입
+ */
+export type JsxDetector = (ast: unknown) => ViolationInfo[];
+
+/**
+ * JSX/TSX 수정 함수 타입
+ */
+export type JsxFixer = (ast: unknown, violation: ViolationInfo) => boolean;
+
+/**
  * 규칙 정의
  */
 export interface RuleDefinition {
@@ -23,38 +76,16 @@ export interface RuleDefinition {
   grade: Grade;
   /** 규칙 설명 (한글) */
   description: string;
-  /** 환경별 수정 함수 */
-  fix: {
-    html?: HtmlFixer;
-    jsx?: JsxFixer;
-  };
   /** 환경별 탐지 함수 */
   detect: {
     html?: HtmlDetector;
     jsx?: JsxDetector;
   };
-}
-
-/**
- * 위반 항목
- */
-export interface Violation {
-  /** 규칙 ID */
-  ruleId: string;
-  /** 위반 등급 */
-  grade: Grade;
-  /** 파일 경로 */
-  file: string;
-  /** CSS 선택자 또는 위치 식별자 */
-  selector: string;
-  /** 소스 코드 라인 번호 (선택) */
-  line?: number;
-  /** 자동 수정 가능 여부 */
-  fixable: boolean;
-  /** 수동 처리 시 제안 메시지 (Grade B/C) */
-  suggestion?: string;
-  /** 원본 코드 스니펫 (선택) */
-  original?: string;
+  /** 환경별 수정 함수 */
+  fix: {
+    html?: HtmlFixer;
+    jsx?: JsxFixer;
+  };
 }
 
 /**
@@ -88,38 +119,6 @@ export interface ScanResult {
 }
 
 /**
- * HTML 수정 함수 타입
- * @param $ - cheerio 인스턴스
- * @param element - 대상 엘리먼트
- * @returns 수정 성공 여부
- */
-export type HtmlFixer = (
-  $: cheerio.CheerioAPI,
-  element: cheerio.Element
-) => boolean;
-
-/**
- * HTML 탐지 함수 타입
- * @param $ - cheerio 인스턴스
- * @returns 위반 항목 배열
- */
-export type HtmlDetector = ($: cheerio.CheerioAPI) => Omit<Violation, 'file'>[];
-
-/**
- * JSX/TSX 수정 함수 타입
- * @param node - Babel AST 노드
- * @returns 수정 성공 여부
- */
-export type JsxFixer = (node: unknown) => boolean;
-
-/**
- * JSX/TSX 탐지 함수 타입
- * @param ast - Babel AST
- * @returns 위반 항목 배열
- */
-export type JsxDetector = (ast: unknown) => Omit<Violation, 'file'>[];
-
-/**
  * CLI 옵션
  */
 export interface CliOptions {
@@ -147,19 +146,5 @@ export interface VerifyOptions {
   outReport?: string;
 }
 
-// cheerio 타입 네임스페이스 선언 (런타임에서 cheerio import)
-declare namespace cheerio {
-  interface CheerioAPI {
-    (selector: string): Cheerio<Element>;
-    html(): string;
-  }
-  interface Cheerio<T> {
-    each(fn: (index: number, element: T) => void): this;
-    attr(name: string): string | undefined;
-    attr(name: string, value: string): this;
-  }
-  interface Element {
-    tagName: string;
-    attribs: Record<string, string>;
-  }
-}
+// Re-export cheerio types for rules
+export type { CheerioAPI, Element };

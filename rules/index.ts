@@ -1,17 +1,19 @@
-import type { RuleDefinition } from '@a11y-fixer/core';
-
-// Phase 2에서 구현될 규칙들
-// import { htmlLangRule } from './html-lang.rule.js';
-// import { imgAltRule } from './img-alt.rule.js';
-// import { inputLabelRule } from './input-label.rule.js';
-// import { buttonNameRule } from './button-name.rule.js';
-// import { duplicateIdRule } from './duplicate-id.rule.js';
+import type { RuleDefinition, Grade } from '@a11y-fixer/core';
+import { htmlLangRule } from './html-lang.rule.js';
+import { imgAltRule } from './img-alt.rule.js';
+import { inputLabelRule } from './input-label.rule.js';
+import { buttonNameRule } from './button-name.rule.js';
+import { duplicateIdRule } from './duplicate-id.rule.js';
 
 /**
- * 모든 규칙 목록
+ * 모든 규칙 목록 (우선순위 순)
  */
 export const rules: RuleDefinition[] = [
-  // Phase 2에서 추가 예정
+  htmlLangRule,
+  imgAltRule,
+  inputLabelRule,
+  buttonNameRule,
+  duplicateIdRule,
 ];
 
 /**
@@ -24,6 +26,17 @@ export function getRule(id: string): RuleDefinition | undefined {
 /**
  * Grade로 규칙 필터링
  */
-export function getRulesByGrade(grade: 'A' | 'B' | 'C'): RuleDefinition[] {
+export function getRulesByGrade(grade: Grade): RuleDefinition[] {
   return rules.filter((r) => r.grade === grade);
 }
+
+/**
+ * 개별 규칙 export
+ */
+export {
+  htmlLangRule,
+  imgAltRule,
+  inputLabelRule,
+  buttonNameRule,
+  duplicateIdRule,
+};

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>input-label 테스트</title>
+</head>
+<body>
+  <h1>입력 필드 테스트</h1>
+
+  <!-- 케이스 1: label로 연결됨 → 변경 없음 -->
+  <label for="name">이름</label>
+  <input type="text" id="name">
+
+  <!-- 케이스 2: aria-label 있음 → 변경 없음 -->
+  <input type="text" aria-label="검색어 입력">
+
+  <!-- 케이스 3: placeholder만 있음 → aria-label 추가 (Grade A) -->
+  <input type="text" placeholder="이메일 주소">
+
+  <!-- 케이스 4: 아무것도 없음 → Grade B (수동 처리) -->
+  <input type="text" name="phone">
+
+  <!-- 케이스 5: hidden 타입 → 스킵 -->
+  <input type="hidden" name="csrf">
+
+  <!-- 케이스 6: submit 버튼 → 스킵 -->
+  <input type="submit" value="전송">
+</body>
+</html>
