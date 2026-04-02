@@ -1,12 +1,13 @@
 import { Command } from 'commander';
 import { glob } from 'glob';
-import { resolve, relative, dirname, basename } from 'node:path';
+import { resolve, relative, dirname } from 'node:path';
 import { stat, mkdir, writeFile } from 'node:fs/promises';
 import chalk from 'chalk';
 import type { Env, Grade, FixResult } from '@a11y-fixer/core';
 import { fixFile, getSupportedExtensions } from '@a11y-fixer/core';
 import { rules } from '@a11y-fixer/rules';
 import { writeManualQueue, printSummary, printScanResult } from '@a11y-fixer/reporter';
+import { loadElensViolations, prioritizeFiles } from '../elens-adapter.js';
 
 function parseGrade(value: string): Grade[] {
   return value.split(',').map((g) => g.trim().toUpperCase()) as Grade[];
@@ -37,11 +38,22 @@ export const fixCommand = new Command('fix')
       const outDir = resolve(options.out);
 
       // 파일 목록 수집
-      const files = await collectFiles(targetPath, options.env, options.page);
+      let files = await collectFiles(targetPath, options.env, options.page);
 
       if (files.length === 0) {
         console.log('수정할 파일이 없습니다.');
         return;
+      }
+
+      // 이렌즈 JSON 우선순위 보정
+      if (options.fromElens) {
+        try {
+          const elensViolations = await loadElensViolations(resolve(options.fromElens));
+          files = prioritizeFiles(files, elensViolations);
+          console.log(chalk.dim(`이렌즈 JSON 로드: ${elensViolations.length}개 위반 항목 반영`));
+        } catch (err) {
+          console.warn(chalk.yellow(`⚠ 이렌즈 JSON 로드 실패: ${(err as Error).message}`));
+        }
       }
 
       console.log(`\n${files.length}개 파일 처리 중...`);

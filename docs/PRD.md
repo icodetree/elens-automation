@@ -299,8 +299,8 @@ a11y-fixer/ (pnpm workspace monorepo)
 
 ### Phase 6 — 이렌즈 연동 (1일)
 
-- [ ] `--from-elens` 플래그 구현
-- [ ] 이렌즈 JSON → Violation[] 어댑터
+- [x] `--from-elens` 플래그 구현
+- [x] 이렌즈 JSON → Violation[] 어댑터
 
 ---
 
