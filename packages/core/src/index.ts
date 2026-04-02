@@ -22,6 +22,7 @@ export { classifyEnv, getSupportedExtensions, isSupportedEnv } from './classifie
 
 // Parsers
 export { parseHtml, serializeHtml } from './parsers/html.parser.js';
+export { parseJsx, serializeJsx } from './parsers/jsx.parser.js';
 
 // Engine (아래에서 구현)
 export { runEngine, scanFile, fixFile } from './engine.js';

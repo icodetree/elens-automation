@@ -10,6 +10,7 @@ import type {
   Env,
 } from './types.js';
 import { parseHtml, serializeHtml } from './parsers/html.parser.js';
+import { parseJsx, serializeJsx } from './parsers/jsx.parser.js';
 import { classifyEnv } from './classifier.js';
 
 export interface EngineOptions {
@@ -150,9 +151,22 @@ function detectViolations(
         }
       }
     }
+  } else if (env === 'jsx' || env === 'tsx') {
+    const { ast } = parseJsx(content);
+
+    for (const rule of options.rules) {
+      if (rule.detect.jsx) {
+        const ruleViolations = rule.detect.jsx(ast);
+        for (const v of ruleViolations) {
+          violations.push({
+            ...v,
+            file: filePath,
+          });
+        }
+      }
+    }
   }
 
-  // JSX/TSX는 Phase 4에서 구현
   // Vue는 Out of Scope
 
   return violations;
@@ -198,6 +212,24 @@ function applyFixes(
     };
   }
 
-  // JSX/TSX는 Phase 4에서 구현
+  if (env === 'jsx' || env === 'tsx') {
+    const { ast } = parseJsx(content);
+
+    for (const violation of violations) {
+      const rule = rules.find((r) => r.id === violation.ruleId);
+      if (rule?.fix.jsx) {
+        const success = rule.fix.jsx(ast, violation);
+        if (success) {
+          fixedCount++;
+        }
+      }
+    }
+
+    return {
+      fixedContent: serializeJsx(ast),
+      fixedCount,
+    };
+  }
+
   return { fixedContent: content, fixedCount: 0 };
 }

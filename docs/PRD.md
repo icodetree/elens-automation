@@ -288,9 +288,9 @@ a11y-fixer/ (pnpm workspace monorepo)
 
 ### Phase 4 — JSX/TSX 지원 (5일)
 
-- [ ] Babel AST 파서 구현
-- [ ] Phase 2 규칙 JSX 버전 구현
-- [ ] TSX (TypeScript) 지원
+- [x] Babel AST 파서 구현
+- [x] Phase 2 규칙 JSX 버전 구현
+- [x] TSX (TypeScript) 지원
 
 ### Phase 5 — 검증 + 추가 규칙 (3일)
 

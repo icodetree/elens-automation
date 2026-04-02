@@ -28,7 +28,5 @@ export function getSupportedExtensions(): string[] {
  * 현재 지원하는 환경인지 확인
  */
 export function isSupportedEnv(env: Env): boolean {
-  // Phase 1에서는 html만 지원
-  // Phase 4에서 jsx, tsx 추가
-  return env === 'html';
+  return env === 'html' || env === 'jsx' || env === 'tsx';
 }

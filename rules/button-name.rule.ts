@@ -1,4 +1,84 @@
 import type { RuleDefinition, CheerioAPI, ViolationInfo } from '@a11y-fixer/core';
+import _traverse from '@babel/traverse';
+import * as t from '@babel/types';
+import type { File, JSXElement } from '@babel/types';
+
+// @babel/traverse CJS interop
+const traverse =
+  typeof _traverse === 'function'
+    ? _traverse
+    : ((_traverse as unknown as { default: typeof _traverse }).default ?? _traverse);
+
+/**
+ * JSX opening element에서 특정 prop의 문자열 값 추출
+ */
+function getJsxPropValue(
+  openingEl: t.JSXOpeningElement,
+  propName: string
+): string | null {
+  for (const attr of openingEl.attributes) {
+    if (t.isJSXAttribute(attr) && t.isJSXIdentifier(attr.name, { name: propName })) {
+      if (t.isStringLiteral(attr.value)) {
+        return attr.value.value;
+      }
+      if (
+        t.isJSXExpressionContainer(attr.value) &&
+        t.isStringLiteral(attr.value.expression)
+      ) {
+        return attr.value.expression.value;
+      }
+      return '';
+    }
+  }
+  return null;
+}
+
+/**
+ * JSX opening element에 특정 prop이 존재하는지 확인
+ */
+function hasJsxProp(openingEl: t.JSXOpeningElement, propName: string): boolean {
+  return openingEl.attributes.some(
+    (attr) =>
+      t.isJSXAttribute(attr) && t.isJSXIdentifier(attr.name, { name: propName })
+  );
+}
+
+/**
+ * JSXElement children에서 텍스트 노드가 있는지 확인 (공백 제외)
+ */
+function hasTextChildren(element: JSXElement): boolean {
+  for (const child of element.children) {
+    if (t.isJSXText(child) && child.value.trim()) {
+      return true;
+    }
+    if (
+      t.isJSXExpressionContainer(child) &&
+      t.isStringLiteral(child.expression) &&
+      child.expression.value.trim()
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * JSXElement children에서 img 태그의 alt 값 탐색
+ */
+function findImgAltInChildren(element: JSXElement): string | null {
+  for (const child of element.children) {
+    if (t.isJSXElement(child)) {
+      const childOpening = child.openingElement;
+      if (t.isJSXIdentifier(childOpening.name, { name: 'img' })) {
+        const alt = getJsxPropValue(childOpening, 'alt');
+        if (alt !== null && alt !== '') {
+          return alt;
+        }
+      }
+    }
+  }
+  return null;
+}
 
 /**
  * button-name 규칙
@@ -21,6 +101,60 @@ export const buttonNameRule: RuleDefinition = {
   description: '버튼에 접근 가능한 이름이 있어야 합니다',
 
   detect: {
+    jsx: (ast: unknown): ViolationInfo[] => {
+      const violations: ViolationInfo[] = [];
+      let buttonIndex = 0;
+
+      traverse(ast as File, {
+        JSXElement(path) {
+          const openingEl = path.node.openingElement;
+
+          if (!t.isJSXIdentifier(openingEl.name, { name: 'button' })) {
+            return;
+          }
+
+          const currentIndex = buttonIndex++;
+
+          // 이미 접근 가능한 이름이 있는지 확인
+          if (
+            hasJsxProp(openingEl, 'aria-label') ||
+            hasJsxProp(openingEl, 'aria-labelledby') ||
+            hasJsxProp(openingEl, 'title')
+          ) {
+            return;
+          }
+
+          // 텍스트 자식 확인
+          if (hasTextChildren(path.node)) {
+            return;
+          }
+
+          const imgAlt = findImgAltInChildren(path.node);
+          const line = openingEl.loc?.start.line;
+
+          // AST 노드에 인덱스 마킹
+          (openingEl as unknown as { _a11yIndex?: number })._a11yIndex = currentIndex;
+
+          const fixable = imgAlt !== null;
+          const grade = fixable ? 'A' : 'B';
+
+          violations.push({
+            ruleId: 'button-name',
+            grade,
+            selector: `button:nth(${currentIndex})`,
+            line,
+            fixable,
+            suggestion: fixable
+              ? undefined
+              : '버튼에 텍스트를 추가하거나 aria-label 속성을 추가해야 합니다',
+            meta: { nodeIndex: currentIndex, imgAlt },
+          });
+        },
+      });
+
+      return violations;
+    },
+
     html: ($: CheerioAPI): ViolationInfo[] => {
       const violations: ViolationInfo[] = [];
 
@@ -105,6 +239,48 @@ export const buttonNameRule: RuleDefinition = {
       }
 
       return false;
+    },
+
+    jsx: (ast: unknown, violation: ViolationInfo): boolean => {
+      if (!violation.fixable) {
+        return false;
+      }
+
+      const meta = violation.meta as { nodeIndex?: number; imgAlt?: string | null } | undefined;
+      const targetIndex = meta?.nodeIndex ?? -1;
+      const imgAlt = meta?.imgAlt;
+
+      if (!imgAlt) {
+        return false;
+      }
+
+      let fixed = false;
+
+      traverse(ast as File, {
+        JSXElement(path) {
+          const openingEl = path.node.openingElement;
+
+          if (!t.isJSXIdentifier(openingEl.name, { name: 'button' })) {
+            return;
+          }
+
+          const nodeMeta = (openingEl as unknown as { _a11yIndex?: number })._a11yIndex;
+          if (nodeMeta !== targetIndex) {
+            return;
+          }
+
+          if (!hasJsxProp(openingEl, 'aria-label')) {
+            openingEl.attributes.push(
+              t.jsxAttribute(t.jsxIdentifier('aria-label'), t.stringLiteral(imgAlt))
+            );
+            fixed = true;
+          }
+
+          path.stop();
+        },
+      });
+
+      return fixed;
     },
   },
 };
