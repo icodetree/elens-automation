@@ -86,3 +86,4 @@ FixResult { file, violations, fixedCount, skippedCount, diff }
 - @docs/PRD.md — 전체 제품 요구사항
 - @docs/rules-registry.md — 규칙 목록 및 KWCAG 2.2 매핑
 - @docs/fixture-guide.md — 픽스처 테스트 작성 가이드
+

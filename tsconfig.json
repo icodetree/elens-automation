@@ -17,7 +17,8 @@
     "paths": {
       "@a11y-fixer/core": ["./packages/core/src"],
       "@a11y-fixer/cli": ["./packages/cli/src"],
-      "@a11y-fixer/reporter": ["./packages/reporter/src"]
+      "@a11y-fixer/reporter": ["./packages/reporter/src"],
+      "@a11y-fixer/rules": ["./rules"]
     }
   },
   "include": ["packages/*/src/**/*", "rules/**/*", "tests/**/*"],

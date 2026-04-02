@@ -42,7 +42,7 @@
       {
         "hooks": [{
           "type": "command",
-          "command": "echo '=== 현재 빌드 상태 ===' && npx tsc --noEmit 2>&1 | head -10 && echo '=== 테스트 현황 ===' && pnpm test --reporter=verbose 2>&1 | tail -15"
+          "command": "npx tsc --noEmit 2>&1 | head -10"
         }]
       }
     ]

@@ -267,17 +267,17 @@ a11y-fixer/ (pnpm workspace monorepo)
 
 ### Phase 1 — 뼈대 (1일)
 
-- [ ] pnpm workspace 모노레포 초기화
-- [ ] TypeScript + tsup 설정
-- [ ] `packages/core/src/types.ts` 타입 정의 확정
-- [ ] `packages/cli` commander 기본 구조
+- [x] pnpm workspace 모노레포 초기화
+- [x] TypeScript + tsup 설정
+- [x] `packages/core/src/types.ts` 타입 정의 확정
+- [x] `packages/cli` commander 기본 구조
 
 ### Phase 2 — HTML Rule Engine MVP (5일)
 
-- [ ] cheerio HTML 파서
-- [ ] 우선순위 상위 5개 규칙 구현 (`html-lang`, `img-alt`, `input-label`, `button-name`, `duplicate-id`)
-- [ ] 규칙별 before/after 픽스처 테스트 작성 + 통과
-- [ ] dry-run 콘솔 출력
+- [x] cheerio HTML 파서
+- [x] 우선순위 상위 5개 규칙 구현 (`html-lang`, `img-alt`, `input-label`, `button-name`, `duplicate-id`)
+- [x] 규칙별 before/after 픽스처 테스트 작성 + 통과
+- [x] dry-run 콘솔 출력
 
 ### Phase 3 — CLI 연결 (2일)
 
